@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="col-md-4">
+    <div class="p-3 m-3 border border-secondary rounded text-center">
+        <form class="m-0" action="" method="post" novalidate>
+            {{ enter_existing_form.hidden_tag() }}
+            <div class="form-group">
+                {{ enter_existing_form.hat_number(placeholder="XAOHBW", class_="form-control form-control-lg") }}
+                {% for error in enter_existing_form.hat_number.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {{ enter_existing_form.submit(class_="btn btn-danger btn-lg btn-block") }}
+        </form>
+        <div class="py-3 text-muted"> or </div>
+        <form class="m-0" action="{{ url_for('main.new_controller') }}" method="get">
+            <button type="submit" class="btn btn-outline-danger btn-lg btn-block btn-outline">Create new</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

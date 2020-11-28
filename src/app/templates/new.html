@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="col-md-4">
+    <div class="p-3 m-3 border border-secondary rounded text-center">
+        <div class="py-3">Your new hat number is {{ hat.hat_number }}</div>
+        <form class="m-0" action="{{ url_for('main.add_name_controller', hat_number=hat.hat_number) }}" method="get">
+            <button type="submit" class="btn btn-outline-danger btn-lg btn-block btn-outline">Add names</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="col-md-4">
+    <div class="p-3 m-3 border border-secondary rounded text-center">
+        {% if name_count == 0 %}
+            <div class="py-3 text-muted"> There are no more names in the hat </div>
+        {% else %}
+        <div class="py-3"> You drew <b>{{ name }}</b> </div>
+            {% if name_count == 1 %}
+                <div class="py-3 text-muted"> There is {{ name_count }} name left in the hat </div>
+            {% else %}
+                <div class="py-3 text-muted"> There are {{ name_count }} names left in the hat </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

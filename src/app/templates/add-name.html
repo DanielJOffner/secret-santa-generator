@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="col-md-4">
+    <div class="p-3 m-3 border border-secondary rounded text-center">
+        <div class="py-3 text-muted"> Adding names to {{hat.hat_number}} </div>
+        <form class="m-0" action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name(placeholder="Santa Claus", class_="form-control form-control-lg") }}
+                {% for error in form.name.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {{ form.submit(class_="btn btn-danger btn-lg btn-block") }}
+        </form>
+
+        {% if name_count == 1 %}
+            <div class="py-3 text-muted"> There is {{ name_count }} name in the hat </div>
+        {% else %}
+            <div class="py-3 text-muted"> There are {{ name_count }} names in the hat </div>
+        {% endif %}
+
+        <table class="table table-sm">
+          <tbody>
+            {% for name in hat.names %}
+                <tr>
+                    <th> {{ name.name }} <th>
+                    {% if name.disposition == 'Naughty' %}
+                        <td class="text-danger">naughty</td>
+                    {% else %}
+                        <td class="text-success">nice</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
