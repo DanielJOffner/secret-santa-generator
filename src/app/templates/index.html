@@ -4,6 +4,14 @@
 {% block content %}
 <div class="col-md-4">
     <div class="p-3 m-3 border border-secondary rounded text-center">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="py-3"> Enter an existing hat to draw a name</div>
         <form class="m-0" action="" method="post" novalidate>
             {{ enter_existing_form.hidden_tag() }}
             <div class="form-group">
@@ -15,6 +23,7 @@
             {{ enter_existing_form.submit(class_="btn btn-danger btn-lg btn-block") }}
         </form>
         <div class="py-3 text-muted"> or </div>
+        <div class="py-3"> Create a new hat to start adding names</div>
         <form class="m-0" action="{{ url_for('main.new_controller') }}" method="get">
             <button type="submit" class="btn btn-outline-danger btn-lg btn-block btn-outline">Create new</button>
         </form>

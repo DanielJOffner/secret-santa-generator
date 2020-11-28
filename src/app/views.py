@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, flash
 import random
 import strgen
 from .forms import EnterExisting, AddName
@@ -55,18 +55,23 @@ def add_name_controller(hat_number):
 @main_blueprint.route('/draw-name/<hat_number>')
 def draw_name_controller(hat_number):
     hat = Hat.query.filter_by(hat_number=hat_number).first()
+
+    if hat is None:
+        flash("Sorry, we couldn't find the hat you are looking for")
+        return redirect(url_for('main.index_controller'))
+
     if len(hat.names) == 0:
         return render_template('draw-name.html', name=None, name_count=len(hat.names))
 
     # user has already drawn a name
-    if 'name' in session:
-        return render_template('draw-name.html', name=session['name'], name_count=len(hat.names))
+    if hat.hat_number in session:
+        return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names))
 
     name = random.choice(hat.names)
-    session['name'] = name.name
+    session[hat.hat_number] = name.name
 
     db.session.delete(name)
     db.session.commit()
 
     hat = Hat.query.filter_by(hat_number=hat_number).first()
-    return render_template('draw-name.html', name=session['name'], name_count=len(hat.names))
+    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names))
