@@ -18,8 +18,10 @@
             {% else %}
                 <div class="py-3 text-muted"> There are {{ name_count }} names left in the hat </div>
             {% endif %}
+            <div class="py-3"> Drew your own name? Click <a href="{{url_for('main.redraw_controller', hat_number=hat.hat_number)}}">here</a> to redraw </div>
         {% endif %}
-    </div>
+
+   </div>
 </div>
 {% endblock %}
 

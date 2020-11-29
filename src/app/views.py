@@ -61,11 +61,11 @@ def draw_name_controller(hat_number):
         return redirect(url_for('main.index_controller'))
 
     if len(hat.names) == 0:
-        return render_template('draw-name.html', name=None, name_count=len(hat.names))
+        return render_template('draw-name.html', name=None, name_count=len(hat.names), hat=hat)
 
     # user has already drawn a name
     if hat.hat_number in session:
-        return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names))
+        return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
 
     name = random.choice(hat.names)
     session[hat.hat_number] = name.name
@@ -74,4 +74,33 @@ def draw_name_controller(hat_number):
     db.session.commit()
 
     hat = Hat.query.filter_by(hat_number=hat_number).first()
-    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names))
+    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
+
+
+@main_blueprint.route('/redraw/<hat_number>')
+def redraw_controller(hat_number):
+    hat = Hat.query.filter_by(hat_number=hat_number).first()
+
+    if len(hat.names) == 0:
+        flash('There are no more names to redraw')
+        return redirect(url_for('main.index_controller'))
+
+    # draw a new name which is different
+    name = random.choice(hat.names)
+    new_name = name.name
+    db.session.delete(name)
+
+    # add the old name back to the hat
+    old_name = Name()
+    old_name.name = session[hat.hat_number]
+    old_name.hat_id = hat.id
+    old_name.disposition = 'Naughty'
+    db.session.add(old_name)
+
+    # commit the change
+    db.session.commit()
+
+    # update the users draw
+    session[hat.hat_number] = new_name
+
+    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
