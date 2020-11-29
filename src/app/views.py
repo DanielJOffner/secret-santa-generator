@@ -28,6 +28,16 @@ def new_controller():
     return render_template('new.html', hat=hat)
 
 
+@main_blueprint.route('/show-draw/<hat_number>')
+def show_draw_controller(hat_number):
+    hat = Hat.query.filter_by(hat_number=hat_number).first()
+    # redirect the user to the homepage if their session has expired
+    if hat.hat_number not in session:
+        return redirect(url_for('main.index_controller'))
+
+    return render_template('show-draw.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
+
+
 @main_blueprint.route('/add-name/<hat_number>', methods=['GET', 'POST'])
 def add_name_controller(hat_number):
     hat = Hat.query.filter_by(hat_number=hat_number).first()
@@ -56,25 +66,27 @@ def add_name_controller(hat_number):
 def draw_name_controller(hat_number):
     hat = Hat.query.filter_by(hat_number=hat_number).first()
 
+    # hat not found
     if hat is None:
         flash("Sorry, we couldn't find the hat you are looking for")
         return redirect(url_for('main.index_controller'))
 
+    # no names to draw
     if len(hat.names) == 0:
-        return render_template('draw-name.html', name=None, name_count=len(hat.names), hat=hat)
+        session[hat.hat_number] = None
+        return redirect(url_for('main.show_draw_controller', hat_number=hat.hat_number))
 
     # user has already drawn a name
     if hat.hat_number in session:
-        return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
+        return redirect(url_for('main.show_draw_controller', hat_number=hat.hat_number))
 
+    # draw a new name
     name = random.choice(hat.names)
     session[hat.hat_number] = name.name
-
     db.session.delete(name)
     db.session.commit()
 
-    hat = Hat.query.filter_by(hat_number=hat_number).first()
-    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
+    return redirect(url_for('main.show_draw_controller', hat_number=hat.hat_number))
 
 
 @main_blueprint.route('/redraw/<hat_number>')
@@ -103,4 +115,4 @@ def redraw_controller(hat_number):
     # update the users draw
     session[hat.hat_number] = new_name
 
-    return render_template('draw-name.html', name=session[hat.hat_number], name_count=len(hat.names), hat=hat)
+    return redirect(url_for('main.show_draw_controller', hat_number=hat.hat_number))
